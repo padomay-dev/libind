@@ -1,52 +1,83 @@
+{% load static %}
 <!DOCTYPE HTML>
-<HTML LANG="KO">
+<HTML LANG="UTF-8">
 
 <HEAD>
     <TITLE>{% block title %} AWS / Django Web Application{% endblock %}</TITLE>
     <META charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    {% load static %}
-    <SCRIPT src="{% static 'library_search_app/assets/js/jquery-3.3.1.min.js' %}"></SCRIPT>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- icons url -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/base.css'%}">
     {% block script %}{% endblock %}
 </HEAD>
 
 <BODY>
     <header>
+        <div class='container'>
+            <ul class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">로그인</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">로그아웃</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">회원가입</a>
+                </li>
+            </ul>
+        </div>
     </header>
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-        <!-- Brand -->
-        <a class="navbar-brand" href="#">Logo</a>
 
-        <!-- Links -->
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">자유게시판</a>
-            </li>
-
-            <!-- Dropdown -->
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                    Dropdown link
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Link 1</a>
-                    <a class="dropdown-item" href="#">Link 2</a>
-                    <a class="dropdown-item" href="#">Link 3</a>
-                </div>
-            </li>
-        </ul>
-    </nav>
+    <div class="container mb-auto">
+        <nav class="navbar navbar-inverse navbar-expand-md bg-dark navbar-dark">
+            <a class="navbar-brand" href="{%url 'main' %}"> LIBIND</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'search'%}">검색</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{%url 'introduce'%}">소개</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">추천 도서</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">도서관</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">공지사항</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">게시판</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
     <article>
         {% block content %}{% endblock %}
     </article>
     <footer>
-        <DIV ID="row">
-            <DIV CLASS="col-12 center">Copyright by Digitalbooks / <A href="mailto:padomay1352.books@gmail.com">Contact
-                    Us</A></DIV>
-        </DIV>
+        <div class='container'>
+            <DIV class="text-center">Copyright by libind / <A href="mailto:padomay1352.books@gmail.com">ContactUs</A>
+            </DIV>
+        </div>
     </footer>
 </BODY>
 

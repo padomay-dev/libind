@@ -15,3 +15,14 @@ from library_search_app.models import *
 def main_page(request):
     args = {}
     return render(request, 'main.html', args)
+
+def introduce_page(request):
+    return render(request, 'introduce.html')
+
+def login_page(request):
+    args = {}
+    return render(request, 'login.html', args)
+
+def search_page(request):
+    args = {}
+    return render(request, 'search.html', args)

@@ -1,0 +1,12 @@
+{
+	"name": "book",
+	"dockerComposeFile": [
+		"../docker/docker-compose.yml",
+	],
+	"service": "book",
+    "forwardPorts":[8080],
+	"workspaceFolder": "./app",
+	"settings":  {
+		"terminal.integrated.cwd": "${fileDirname}"
+	},
+}

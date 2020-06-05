@@ -9,17 +9,9 @@
 {% block content %}
 <div class="container mt-2">
     <div class='jumbotron'>
-        <div class="mx-0 bg-light rounded-pill shadow-sm">
-            <form action="{% url 'search' %}">
+        <div class="p-1 bg-light rounded-pill shadow-sm mb-4">
+            <form action="{% url 'search'%}">
                 <div class="input-group">
-                    <div class="input-group-prepend">
-                        <select class="custom-select border-0 rounded-circle" id="condition" name="condition">
-                            <option value="title">제목</option>
-                            <option value="auth">작가</option>
-                            <option value="isbn">ISBN</option>
-                            <option value="library">도서관</option>
-                        </select>
-                    </div>
                     <input type="search" placeholder="What're you searching for?" aria-describedby="button-addon1"
                         class="form-control border-0 bg-light">
                     <div class="input-group-append">
