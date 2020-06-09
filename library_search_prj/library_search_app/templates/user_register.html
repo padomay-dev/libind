@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}회원가입 {% endblock %}
+
+{% block script %}
+<script src="{% static 'library_search_app/assets/js/user_register.js'%}?ver=0.2123123"></script>
+<link rel="stylesheet" href="{% static 'library_search_app/assets/css/user_register.css' %}?ver=0.2">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <form method="post" action="{% url 'user_register_result' %}" onsubmit="return checkField();"
+        class="w-50 my-5 mx-auto" id="user_register_form">{% csrf_token %}
+        <h1 class="display-4">회원가입</h1>
+        <div class="form-group">
+            <label class="font-weight-bold" for="user_id">ID: </label>
+            <input type="text" name="user_id" id="user_id" class="form-control form-control-lg" placeholder="Enter id"
+                onblur="idCheck()">
+            <div id="id_result"></div>
+        </div>
+        <div class="form-group">
+            <label class="font-weight-bold" for="password">Password:</label>
+            <input type="password" name="password" class="form-control form-control-lg" placeholder="Enter password"
+                id="password" onblur="passwordLengthCheck()">
+            <div id="password_result"></div>
+        </div>
+        <div class="form-group">
+            <label class="font-weight-bold" for="password_check">Password 확인:</label>
+            <input type="password" class="form-control form-control-lg" placeholder="Enter password check"
+                id="password_check" onblur="passwordCheck()">
+            <div id="password_check_result"></div>
+        </div>
+        <div class="form-group">
+            <label class="font-weight-bold" for="email">Email: </label>
+            <input type="email" name="email" class="form-control form-control-lg" id="email" placeholder="Enter email"
+                onblur="emailCheck()">
+            <div id="email_result"></div>
+        </div>
+        <div class="form-group">
+            <label for="last_name" class="font-weight-bold">Name: </label>
+            <input type="text" name="last_name" class="form-control form-control-lg" id="last_name"
+                placeholder="Enter Name" onblur="nameCheck();">
+            <div id="name_result"></div>
+        </div>
+        <div class="form-group">
+            <label class="font-weight-bold" for="password">Date of birth</label>
+            <div class="form-row" id="date_of_birth">
+                <input class="form-control form-control-lg col ml-1 mr-2" type="text" name="birth_year" id="birth_year"
+                    size="4" placeholder="년" />
+                <select class='form-control form-control-lg col mx-2' name="birth_month" id="birth_month">
+                    <option value="default">월</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+                <input class="form-control form-control-lg col mx-2" type="text" name="birth_day" id="birth_day"
+                    placeholder="일" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="font-weight-bold" for="phone_number">Phone number: </label>
+            <input type="text" name="phone_number" class="form-control form-control-lg" id="phone_number"
+                placeholder="Phone number" minlength="8">
+        </div>
+        <button type="submit" class="btn btn-success">Sign Up</button>
+    </form>
+
+</div>
+{%endblock%}

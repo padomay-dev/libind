@@ -9,4 +9,17 @@
 	"settings":  {
 		"terminal.integrated.cwd": "${fileDirname}"
 	},
+	"extensions": [
+		"ms-python.python",
+		"christian-kohler.path-intellisense",
+		"yzhang.markdown-all-in-one",
+		"zignd.html-css-class-completion",
+		"oderwat.indent-rainbow",
+		"donjayamanne.githistory",
+		"dbaeumer.vscode-eslint",
+		"batisteo.vscode-django",
+		"hookyqr.beautify",
+		"formulahendry.auto-complete-tag",
+		"roscop.activefileinstatusbar"
+	],
 }

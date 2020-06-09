@@ -4,9 +4,9 @@ from django.utils import timezone
 # Create your models here.
 class UserManager(BaseUserManager):
 
-	def create_user(self, username, password, last_name, email, phone, date_of_birth):
+	def create_user(self, user_id, password, last_name, email, phone, date_of_birth):
 		user = self.model(
-			username=username,
+			user_id=user_id,
 			last_name=last_name,
 			email=self.normalize_email(email),
 			phone=phone,
@@ -21,9 +21,9 @@ class UserManager(BaseUserManager):
 		user.save(using=self._db)
 		return user
 
-	def create_superuser(self, username, last_name, email, phone, date_of_birth, password):
+	def create_superuser(self, user_id, password, last_name, email, phone, date_of_birth):
 		user = self.create_user(
-			username=username,
+			user_id=user_id,
 			password=password,
 			last_name=last_name,
 			email=email,
@@ -36,22 +36,22 @@ class UserManager(BaseUserManager):
 		return user
 		
 class User(AbstractBaseUser):
+	user_id = models.CharField(unique=True, max_length=150)
 	password = models.CharField(max_length=128)
-	username = models.CharField(unique=True, max_length=150)
-	is_superuser = models.IntegerField()
-	last_name = models.CharField(max_length=150)
-	phone = models.CharField(max_length=20)
 	email = models.CharField(max_length=254)
-	date_of_birth = models.DateTimeField()
+	last_name = models.CharField(max_length=150)
+	phone = models.CharField(max_length=20, blank=True, null=True)
+	date_of_birth = models.DateTimeField(blank=True, null=True)
 	date_joined = models.DateTimeField()
 	last_login = models.DateTimeField(blank=True, null=True)
+	is_superuser = models.IntegerField()
 	is_staff = models.IntegerField(blank=True, null=True)
 	is_active = models.IntegerField(blank=True, null=True)
 	first_name = models.CharField(max_length=30, blank=True, null=True)
 
 	objects = UserManager()
 
-	USERNAME_FIELD = 'username'
+	USERNAME_FIELD = 'user_id'
 	REQUIRED_FIELDS = ['last_name', 'phone', 'email', 'date_of_birth']
 
 	def has_perm(self, perm, obj=None):

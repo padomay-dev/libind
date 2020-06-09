@@ -116,7 +116,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-# AUTH_USER_MODEL = 'library_search_app.user'
+AUTH_USER_MODEL = 'library_search_app.User'
 LOGIN_REDIRECT_URL = '/library_search_app/'
 LOGOUT_REDIRECT_URL = '/library_search_app/'
 
@@ -124,3 +124,7 @@ LOGOUT_REDIRECT_URL = '/library_search_app/'
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'library_search_app', 'static'),
+]

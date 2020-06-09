@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block title%} HELLO {% endblock %}
 {% block script %}
 <script src="{% static 'assets/js/boards.js' %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'assets/css/main.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'library_search_app/assets/css/main.css' %}">
 {% endblock %}
 {% block content %}
 <div class="container mt-2">
     <div class='jumbotron'>
         <div class="mx-0 bg-light rounded-pill shadow-sm">
-            <form action="{% url 'search' %}">
+            <form action="{% url 'main' %}">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <select class="custom-select border-0 rounded-circle" id="condition" name="condition">

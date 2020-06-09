@@ -1,26 +1,56 @@
 {% extends "base.html" %}
-{% block title%} LOGIN {% endblock %}
-{% block script%}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'assets/css/login.css' %}">
+
+{% block title%} LOGIN {% endblock %}
+
+{% block script%}
 {% endblock %}
+
 {% block content %}
 <div class="container">
-    <div class="card mx-auto my-5">
+    <div class="card mx-auto my-5 w-50">
         <h3 class="card-header">Sign in</h3>
-
-        <form class="card-body" role="form">
+        <form class="card-body" action="." class="needs-validation" novalidate>
+            {% csrf_token %}
             <div class="form-group">
-                <label for="exampleInputEmail1">Username or Email</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                <label class="font-weight-bold" for="user_id">ID</label>
+                <input type="text" name="user_id" class="form-control" id="user_id" placeholder="Enter id" required>
+                <div class="valid-feedback">Valid.</div>
+                <div class="invalid-feedback">ID를 입력해주시기 바랍니다.</div>
             </div>
             <div class="form-group">
-                <label for="exampleInputPassword1">Password <a href="/sessions/forgot_password">(forgot
+                <label class="font-weight-bold" for="password">Password <a href="/sessions/forgot_password">(forgot
                         password)</a></label>
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                <input type="password" name="password" class="form-control" id="password" placeholder="Password"
+                    required>
+                <div class="valid-feedback">Valid.</div>
+                <div class="invalid-feedback">ID를 입력해주시기 바랍니다.</div>
             </div>
-            <button type="submit" class="btn btn-sm btn-default">Sign in</button>
+            <input type="submit" value="Sign In">
+            <button type="button" class="btn btn-success" onclick="location.href='{% url 'user_register' %}'">Sign
+                up</button>
         </form>
     </div>
+
+    <script>
+        // Disable form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Get the forms we want to add validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
 </div>
 {% endblock %}

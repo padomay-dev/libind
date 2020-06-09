@@ -18,8 +18,7 @@
     <!-- icons url -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-
-    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/base.css'%}">
+    <link rel="stylesheet" type="text/css" href="{% static 'library_search_app/assets/css/base.css'%}">
     {% block script %}{% endblock %}
 </HEAD>
 
@@ -27,15 +26,19 @@
     <header>
         <div class='container'>
             <ul class="nav justify-content-end">
+                {% if user.user_id%}
+                <li class="nav-item"> {{user.last_name}}님</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">로그아웃</a>
+                </li>
+                {%else%}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">로그인</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">로그아웃</a>
+                    <a class="nav-link" href="{% url 'user_register' %}">회원가입</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">회원가입</a>
-                </li>
+                {%endif%}
             </ul>
         </div>
     </header>
@@ -49,7 +52,7 @@
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'search'%}">검색</a>
+                        <a class="nav-link" href="{% url 'main'%}">검색</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{%url 'introduce'%}">소개</a>
