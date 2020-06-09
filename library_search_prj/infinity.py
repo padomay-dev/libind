@@ -1,4 +1,4 @@
 import time
 while True:
     print('hello')
-    time.sleep(500)
+    time.sleep(100000)
