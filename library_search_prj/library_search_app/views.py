@@ -15,6 +15,7 @@ from library_search_app.models import *
 from django.core.mail import EmailMessage
 import random
 import string
+import threading
 
 
 def main(request):
@@ -52,11 +53,12 @@ def forgot_password(request):
     if request.method == "POST":
         user_id = request.POST["user_id"]
         email = request.POST["email"]
-        print(user_id)
-        print(email)
+
+        # email체크
         try:
             user = User.objects.get(user_id=user_id, email=email)
 
+            # 임시패스워드 생성
             tmp_password = ""
             for i in range(8):
                 tmp_password += random.choice(string.ascii_lowercase)
@@ -65,11 +67,13 @@ def forgot_password(request):
             title = user_id+"님의 LIBIND 임시패스워드"
             content = "임시패스워드 : " + tmp_password
 
+            # 패스워드 변경
             user.set_password(tmp_password)
             user.save()
 
             email = EmailMessage(title, content, to=[email])
-            email.send()
+            # 전송시 속도가 느려짐으로 쓰레드로 돌림
+            threading.Thread(target=email.send).start()
             return redirect('main')
         except:
             return render(request, 'forgot_password.html', {"error_msg": "ID와 Email이 일치하지 않습니다."})
