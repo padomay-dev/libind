@@ -18,10 +18,46 @@ def main(request):
 def introduce(request):
     return render(request, 'introduce.html')
 
+def login(request):
+    if request.method == "POST":
+        user_id = request.POST["user_id"]
+        password = request.POST["password"]
+        user = auth.authenticate(request, user_id=user_id, password = password)
+
+        if user is not None:
+            auth.login(request, user)
+            return redirect('main')
+        else:
+            args = {}
+            args.update({"msg": "가입하지 않은 아이디이거나, 잘못된 비밀번호입니다."})
+            print(args["msg"])
+            return render(request, 'login.html', args)
+    return render(request, 'login.html')
+
+def password_change_check(reuqest):
+    if reuqest.method == "POST":
+        user_id = reuqest.POST['user_id']
+    else:
+        user_id = ''
+
+    try:
+        user = User.objects.get(user_id=user_id)
+    except:
+        user = None
+    if user is None:
+        overlap = "pass"
+    else:
+        overlap = "fail"
+    context = {'overlap': overlap}
+
+    return JsonResponse(context)
+
+def logout(request):
+    auth.logout(request)
+    return redirect('main')
 
 def user_register(request):
     return render(request, 'user_register.html')
-
 
 def user_register_idcheck(reuqest):
     if reuqest.method == "POST":
@@ -65,7 +101,7 @@ def user_register_result(request):
                 user_id, password, last_name, email, phone, date_of_birth
             )
 
-            redirection_page = '/library_search/user_register_completed/'
+            redirection_page = '/library_search/user_register_done/'
         else:
             redirection_page = '/library_search/error/'
     except:
@@ -73,24 +109,11 @@ def user_register_result(request):
 
     return redirect(redirection_page)
 
+def user_register_done(request):
+    return render(request,  'user_register_done.html')
 
-def user_register_completed(request):
-    return render(request,  'user_register_completed.html')
+def profil(request):
+    return render(request, 'profil.html')
 
-def login(request):
-    if request.method == "POST":
-        user_id = request.POST["user_id"]
-        password = request.POST["password"]
-        user = auth.authenticate(request, user_id=user_id, password = password)
-
-        if user is not None:
-            auth.login(request, user)
-            return redirect('main')
-        else:
-            return redirect('error')
-    return render(request, 'login.html')
-def logout(request):
-    auth.logout(request)
-    return redirect('main')
 def error(request):
     return render(request, 'error.html')

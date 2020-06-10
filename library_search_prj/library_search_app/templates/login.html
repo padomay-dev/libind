@@ -8,49 +8,47 @@
 
 {% block content %}
 <div class="container">
-    <div style="min-width:400px;" class="card mx-auto my-5 w-50">
+    <div style="min-width:400px;" class="card mx-auto my-5 w-50 ">
         <h3 class="card-header">Sign in</h3>
-        <form class="card-body" method="POST" action="." class="needs-validation" novalidate>
+        <form action="." method="POST" class="card-body needs-validation" novalidate>
             {% csrf_token %}
             <div class="form-group">
                 <label class="font-weight-bold" for="user_id">ID</label>
-                <input type="text" name="user_id" class="form-control" id="user_id" placeholder="Enter id" required>
-                <div class="valid-feedback">Valid.</div>
-                <div class="invalid-feedback">ID를 입력해주시기 바랍니다.</div>
+                <input type="text" class="form-control" id="user_id" placeholder="Enter id" name="user_id" required>
+                <div class="invalid-feedback">ID를 입력해주세요</div>
             </div>
             <div class="form-group">
                 <label class="font-weight-bold" for="password">Password <a href="/sessions/forgot_password">(forgot
                         password)</a></label>
                 <input type="password" name="password" class="form-control" id="password" placeholder="Password"
                     required>
-                <div class="valid-feedback">Valid.</div>
-                <div class="invalid-feedback">ID를 입력해주시기 바랍니다.</div>
+                <div class="invalid-feedback">패스워드를 입력해주세요</div>
             </div>
-            <input type="submit" class="btn btn-success" value="Sign In">
-            <button type="button" class="btn btn-success" onclick="location.href='{% url 'user_register' %}'">Sign
+            <div class="text-danger my-1">{{msg}}</div>
+            <button class="btn btn-primary">Sign In</button>
+            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'user_register' %}'">Sign
                 up</button>
         </form>
+        <script>
+            // Disable form submissions if there are invalid fields
+            (function () {
+                'use strict';
+                window.addEventListener('load', function () {
+                    // Get the forms we want to add validation styles to
+                    var forms = document.getElementsByClassName('needs-validation');
+                    // Loop over them and prevent submission
+                    var validation = Array.prototype.filter.call(forms, function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        </script>
     </div>
-
-    <script>
-        // Disable form submissions if there are invalid fields
-        (function () {
-            'use strict';
-            window.addEventListener('load', function () {
-                // Get the forms we want to add validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
-    </script>
 </div>
 {% endblock %}
