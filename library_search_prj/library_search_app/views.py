@@ -48,22 +48,30 @@ def logout(request):
 
 
 def forgot_password(request):
+    print(request.method)
     if request.method == "POST":
         user_id = request.POST["user_id"]
         email = request.POST["email"]
+        print(user_id)
+        print(email)
+        try:
+            user = User.objects.get(user_id=user_id, email=email)
 
-        if User.objects.filter(user_id=user_id, email=email).count() == 0:
             tmp_password = ""
             for i in range(8):
                 tmp_password += random.choice(string.ascii_lowercase)
-            tmp_password += random.randint(1000, 9999)
+            tmp_password += str(random.randint(1000, 9999))
 
             title = user_id+"님의 LIBIND 임시패스워드"
-            content = "임시패스워드 : %s" % tmp_password
+            content = "임시패스워드 : " + tmp_password
+
+            user.set_password(tmp_password)
+            user.save()
+
             email = EmailMessage(title, content, to=[email])
             email.send()
             return redirect('main')
-        else:
+        except:
             return render(request, 'forgot_password.html', {"error_msg": "ID와 Email이 일치하지 않습니다."})
 
     return render(request, 'forgot_password.html')
