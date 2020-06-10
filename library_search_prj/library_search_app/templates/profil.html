@@ -11,53 +11,34 @@
         <h1 class="display-4">프로필</h1>
         <div class="form-group">
             <label class="font-weight-bold" for="user_id">ID: </label>
-            <input type="text" name="user_id" id="user_id" class="form-control form-control-lg" value="{{profil.id}}"
+            <input type="text" name="user_id" id="user_id" class="form-control form-control-lg" value="{{user.user_id}}"
                 readonly>
         </div>
         <div class="form-group">
-            <label class="font-weight-bold" for="password">Password:</label>
-            <input type="password" name="password" class="form-control form-control-lg" id="password"
-                value="{{profil.id}}" readonly>
-        </div>
-        <div class="form-group">
             <label class="font-weight-bold" for="email">Email: </label>
-            <input type="email" name="email" class="form-control form-control-lg" id="email" value="{{profil.email}}"
+            <input type="email" name="email" class="form-control form-control-lg" id="email" value="{{user.email}}"
                 readonly>
         </div>
         <div class="form-group">
             <label for="last_name" class="font-weight-bold">Name: </label>
             <input type="text" name="last_name" class="form-control form-control-lg" id="last_name"
-                value="{{profil.name}}" readonly>
+                value="{{user.last_name}}" readonly>
         </div>
         <div class="form-group">
             <label class="font-weight-bold" for="password">Date of birth</label>
             <div class="form-row" id="date_of_birth">
                 <input class="form-control form-control-lg col ml-1 mr-2" type="text" name="birth_year" id="birth_year"
-                    value="{{profil.birth_year}}" readonly />
-                <select class='form-control form-control-lg col mx-2' name="birth_month" id="birth_month"
-                    value="{{profil.birth_month}}" readonly>
-                    <option value="default">월</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                </select>
+                    value="{{birth_year}}" readonly />
+                <input class="form-control form-control-lg col ml-1 mr-2" type="text" name="birth_month"
+                    id="birth_month" value="{{birth_month}}" readonly />
                 <input class="form-control form-control-lg col mx-2" type="text" name="birth_day" id="birth_day"
-                    value="{{profil.birth_year}}" readonly />
+                    value="{{birth_day}}" readonly />
             </div>
         </div>
         <div class="form-group">
             <label class="font-weight-bold" for="phone_number">Phone number: </label>
-            <input type="text" name="phone_number" class="form-control form-control-lg" id="phone_number"
-                placeholder="Phone number" minlength="8" value="{{profil.birth_year}}" readonly>
+            <input type="text" name="phone_number" class="form-control form-control-lg" id="phone_number" minlength="8"
+                value="{{user.phone}}" readonly>
         </div>
         <button type="button" class="btn btn-success" onclick="location.href='{% url 'password_change' %}'">Change
             Password</button>

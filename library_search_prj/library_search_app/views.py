@@ -34,24 +34,6 @@ def login(request):
             return render(request, 'login.html', args)
     return render(request, 'login.html')
 
-def password_change_check(reuqest):
-    if reuqest.method == "POST":
-        user_id = reuqest.POST['user_id']
-    else:
-        user_id = ''
-
-    try:
-        user = User.objects.get(user_id=user_id)
-    except:
-        user = None
-    if user is None:
-        overlap = "pass"
-    else:
-        overlap = "fail"
-    context = {'overlap': overlap}
-
-    return JsonResponse(context)
-
 def logout(request):
     auth.logout(request)
     return redirect('main')
@@ -100,7 +82,7 @@ def user_register_result(request):
             user = User.objects.create_user(
                 user_id, password, last_name, email, phone, date_of_birth
             )
-
+            auth.login(request, user)
             redirection_page = '/library_search/user_register_done/'
         else:
             redirection_page = '/library_search/error/'
@@ -112,8 +94,17 @@ def user_register_result(request):
 def user_register_done(request):
     return render(request,  'user_register_done.html')
 
+@login_required
 def profil(request):
-    return render(request, 'profil.html')
+    user = request.user
+    print(str(user.date_of_birth)[:-6])
+    date_birth = datetime.strptime(str(user.date_of_birth)[:-6], '%Y-%m-%d %H:%M:%S')
+    args = {}
+    print(date_birth.year, date_birth.month, date_birth.day)
+    args.update({"birth_year": date_birth.year})
+    args.update({"birth_month": date_birth.month})
+    args.update({"birth_day": date_birth.day})
+    return render(request, 'profil.html', args)
 
 def error(request):
     return render(request, 'error.html')
