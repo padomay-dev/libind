@@ -1,4 +1,6 @@
 import math
+import re
+
 from django.contrib import auth
 from django.shortcuts import render, redirect
 from django.db.models import Count
@@ -54,9 +56,7 @@ def user_register_idcheck(reuqest):
     else:
         overlap = "fail"
     context = {'overlap': overlap}
-
     return JsonResponse(context)
-
 
 def user_register_result(request):
     if request.method == "POST":
@@ -65,18 +65,29 @@ def user_register_result(request):
         last_name = request.POST['last_name']
         phone = request.POST['phone_number']
         email = request.POST['email']
+
+        # 생년월일 기입여부 체크
         if request.POST['birth_year'] != '' and request.POST['birth_month'] != '' and request.POST['birth_day'] != '':
             birth_year = int(request.POST['birth_year'])
             birth_month = int(request.POST['birth_month'])
             birth_day = int(request.POST['birth_day'])
 
-    try:
-        date_of_birth = datetime(birth_year, birth_month, birth_day)
-    except:
-        date_of_birth = None
+        # 생년월일 미기입시 None으로 기입
+        try:
+            date_of_birth = datetime(birth_year, birth_month, birth_day)
+        except:
+            date_of_birth = None
 
     try:
-        if user_id and User.objects.filter(user_id=user_id).count() == 0:
+        p = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        # data 길이 체크
+        if len(user_id) < 4 or len(password) < 8 or len(last_name)<2:
+            redirection_page = '/library_search/error/'
+        # email 형식체크
+        elif not p.match(email):
+            redirection_page = '/library_search/error/'    
+        # ID중복여부 체크
+        elif user_id and User.objects.filter(user_id=user_id).count() == 0:
             user = User.objects.create_user(
                 user_id, password, last_name, email, phone, date_of_birth
             )
@@ -108,34 +119,31 @@ def profil(request):
 
 @login_required
 def password_change(request):
-    args = {}
+    redirection_page = "/library_search/error"
+    
     if request.method == "POST":
         current_password = request.POST["old_password"]
+        new_password = request.POST.get("new_password1")
+        password_confirm = request.POST.get("new_password2")
         user = request.user
 
+        # 새로운패스워드 길이 체크
+        if len(new_password) < 8:
+            redirection_page = "/library_search/error"
+        # 새로운 패스워드와 패스워드 확인이 같은지 체크
+        elif new_password != password_confirm:
+            redirection_page = "/library_search/error"    
         # 현재 패스워드 일치여부 체크
-        if check_password(current_password, user.password):
-            new_password = request.POST.get("new_password1")
-            password_confirm = request.POST.get("new_password2")
-
-            # 새로운패스워드 길이 체크
-            print(len(new_password))
-            if len(new_password) < 8:
-                args.update({"new_password_result" : "패스워드길이는 8글자 이상입니다."})
-            else:
-                # 새로운 패스워드 바르게 입력했는지 체크
-                if new_password == password_confirm:
-                    user.set_password(new_password)
-                    user.save()
-                    auth.login(request, user)
-                    url = "/"
-                    resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
-                    return HttpResponse(resp_body)
-                else:
-                    args.update({"new_password_result" : "패스워드가 일치하지 않습니다."})
+        elif check_password(current_password, user.password):
+                user.set_password(new_password)
+                user.save()
+                auth.login(request, user)
+                url = "/library_search/"
+                resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
+                return HttpResponse(resp_body)
         else:
-            args.update({'old_password_result':"현재 패스워드가 일치하지 않습니다."})
-    return render(request, "password_change.html", args)
+            redirection_page = "/library_search/error"
+    return redirect(redirection_page)
 
 def error(request):
     return render(request, 'error.html')
