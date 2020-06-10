@@ -25,29 +25,34 @@ function password_check() {
     password_new1_result = document.getElementById('password_new1_result');
     password_new2_result = document.getElementById('password_new2_result');
 
-    //비밀 번호 빈칸 및 일치여부 체크
+    //비밀번호 길이 및 일치여부 체크
     if (old_pass.value.length < 8) {
         old_pass.focus();
-        password_new1_result.style.display = "none"
-        password_new2_result.style.display = "none"
-        password_old_result.style.display = "block";
+        password_old_result.innerHTML = "Old Password를 8글자 이상 입력해주세요"
         return false;
-    } else if (new_pass1.value.length < 8) {
+    }
+    else if (new_pass1.value.length < 8) {
         new_pass1.focus()
-        password_old_result.style.display = "none"
-        password_new2_result.style.display = "none"
-        password_new1_result.style.display = "block";
+        password_old_result.innerHTML = ""
+        password_new1_result.innerHTML = "New Password를 8글자 이상 입력해주세요"
         return false;
-    } else if (new_pass2.value.length < 8) {
+    }
+    else if (new_pass2.value.length < 8) {
         new_pass2.focus()
-        password_old_result.style.display = "none"
-        password_new1_result.style.display = "none"
-        password_new2_result.style.display = "block";
+        password_new1_result.innerHTML = ""
+        password_new2_result.innerHTML = "New Password Check를 8글자 이상 입력해주세요"
         return false;
-    } else if (new_pass1.value != new_pass2.value) {
+    }
+    else if (new_pass1.value != new_pass2.value) { //새로 입력한 패스워드 체크
         new_pass2.focus()
+        password_new2_result.innerHTML = ""
         password_new2_result.innerHTML = "패스워드가 일치하지 않습니다."
-        password_new2_result.style.display = "block";
+        return false;
+    }
+    else if (old_pass.value == new_pass1.value) {
+        new_pass1.focus()
+        password_new2_result.innerHTML = ""
+        password_old_result.innerHTML = "기존의 패스워드와 동일합니다."
         return false;
     }
 

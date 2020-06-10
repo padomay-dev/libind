@@ -109,14 +109,17 @@ def password_change(request):
     if request.method == "POST":
         current_password = request.POST["old_password"]
         user = request.user
-        if check_password(current_password,user.password):
+
+        
+        if check_password(current_password, user.password):
             new_password = request.POST.get("password1")
             password_confirm = request.POST.get("password2")
             if new_password == password_confirm:
                 user.set_password(new_password)
                 user.save()
-                auth.login(request,user)
-                resp_body = '<script>alert("You must remove an item before adding another");window.location="%s"</script>' % "{% url 'main'%}"
+                auth.login(request, user)
+                url = "/"
+                resp_body = '<script>alert("비밀번호 변경이 완료되었습니다.");window.location="%s"</script>' % url
                 return HttpResponse(resp_body)
             else:
                 args.update({"new_password_result" : "새로운 비밀번호를 다시 확인해주세요."})
