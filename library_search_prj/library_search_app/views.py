@@ -27,7 +27,7 @@ def login(request):
             return redirect('main')
         else:
             args = {}
-            args.update({"msg": "가입하지 않은 아이디이거나, 잘못된 비밀번호입니다."})
+            args.update({"msg": "가입하지 않은 아이디이거나, 잘못된 패스워드입니다."})
             print(args["msg"])
             return render(request, 'login.html', args)
     return render(request, 'login.html')
@@ -96,11 +96,14 @@ def user_register_done(request):
 def profil(request):
     user = request.user
     args = {}
+
+    # 프로필 출력시 생년월일여부 체크 및 년월일로 나누어 변환
     if user.date_of_birth != None:
         date_birth = datetime.strptime(str(user.date_of_birth)[:-6], '%Y-%m-%d %H:%M:%S')
         args.update({"birth_year": date_birth.year})
         args.update({"birth_month": date_birth.month})
         args.update({"birth_day": date_birth.day})
+
     return render(request, 'profil.html', args)
 
 @login_required
@@ -110,21 +113,28 @@ def password_change(request):
         current_password = request.POST["old_password"]
         user = request.user
 
-        
+        # 현재 패스워드 일치여부 체크
         if check_password(current_password, user.password):
-            new_password = request.POST.get("password1")
-            password_confirm = request.POST.get("password2")
-            if new_password == password_confirm:
-                user.set_password(new_password)
-                user.save()
-                auth.login(request, user)
-                url = "/"
-                resp_body = '<script>alert("비밀번호 변경이 완료되었습니다.");window.location="%s"</script>' % url
-                return HttpResponse(resp_body)
+            new_password = request.POST.get("new_password1")
+            password_confirm = request.POST.get("new_password2")
+
+            # 새로운패스워드 길이 체크
+            print(len(new_password))
+            if len(new_password) < 8:
+                args.update({"new_password_result" : "패스워드길이는 8글자 이상입니다."})
             else:
-                args.update({"new_password_result" : "새로운 비밀번호를 다시 확인해주세요."})
+                # 새로운 패스워드 바르게 입력했는지 체크
+                if new_password == password_confirm:
+                    user.set_password(new_password)
+                    user.save()
+                    auth.login(request, user)
+                    url = "/"
+                    resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
+                    return HttpResponse(resp_body)
+                else:
+                    args.update({"new_password_result" : "패스워드가 일치하지 않습니다."})
         else:
-            args.update({'old_password_result':"현재 비밀번호가 일치하지 않습니다."})
+            args.update({'old_password_result':"현재 패스워드가 일치하지 않습니다."})
     return render(request, "password_change.html", args)
 
 def error(request):
