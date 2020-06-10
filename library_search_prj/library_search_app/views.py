@@ -12,17 +12,24 @@ from django.http import HttpResponse, JsonResponse
 from django.views.generic import DetailView
 from datetime import datetime
 from library_search_app.models import *
+from django.core.mail import EmailMessage
+import random
+import string
+
 
 def main(request):
     return render(request, 'main.html')
+
+
 def introduce(request):
     return render(request, 'introduce.html')
+
 
 def login(request):
     if request.method == "POST":
         user_id = request.POST["user_id"]
         password = request.POST["password"]
-        user = auth.authenticate(request, user_id=user_id, password = password)
+        user = auth.authenticate(request, user_id=user_id, password=password)
 
         if user is not None:
             auth.login(request, user)
@@ -34,12 +41,37 @@ def login(request):
             return render(request, 'login.html', args)
     return render(request, 'login.html')
 
+
 def logout(request):
     auth.logout(request)
     return redirect('main')
 
+
+def forgot_password(request):
+    if request.method == "POST":
+        user_id = request.POST["user_id"]
+        email = request.POST["email"]
+
+        if User.objects.filter(user_id=user_id, email=email).count() == 0:
+            tmp_password = ""
+            for i in range(8):
+                tmp_password += random.choice(string.ascii_lowercase)
+            tmp_password += random.randint(1000, 9999)
+
+            title = user_id+"님의 LIBIND 임시패스워드"
+            content = "임시패스워드 : %s" % tmp_password
+            email = EmailMessage(title, content, to=[email])
+            email.send()
+            return redirect('main')
+        else:
+            return render(request, 'forgot_password.html', {"error_msg": "ID와 Email이 일치하지 않습니다."})
+
+    return render(request, 'forgot_password.html')
+
+
 def user_register(request):
     return render(request, 'user_register.html')
+
 
 def user_register_idcheck(reuqest):
     if reuqest.method == "POST":
@@ -57,6 +89,7 @@ def user_register_idcheck(reuqest):
         overlap = "fail"
     context = {'overlap': overlap}
     return JsonResponse(context)
+
 
 def user_register_result(request):
     if request.method == "POST":
@@ -81,11 +114,11 @@ def user_register_result(request):
     try:
         p = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         # data 길이 체크
-        if len(user_id) < 4 or len(password) < 8 or len(last_name)<2:
+        if len(user_id) < 4 or len(password) < 8 or len(last_name) < 2:
             redirection_page = '/library_search/error/'
         # email 형식체크
         elif not p.match(email):
-            redirection_page = '/library_search/error/'    
+            redirection_page = '/library_search/error/'
         # ID중복여부 체크
         elif user_id and User.objects.filter(user_id=user_id).count() == 0:
             user = User.objects.create_user(
@@ -100,27 +133,31 @@ def user_register_result(request):
 
     return redirect(redirection_page)
 
+
 def user_register_done(request):
     return render(request,  'user_register_done.html')
 
-@login_required
+
+@ login_required
 def profil(request):
     user = request.user
     args = {}
 
     # 프로필 출력시 생년월일여부 체크 및 년월일로 나누어 변환
     if user.date_of_birth != None:
-        date_birth = datetime.strptime(str(user.date_of_birth)[:-6], '%Y-%m-%d %H:%M:%S')
+        date_birth = datetime.strptime(str(user.date_of_birth)[
+            :-6], '%Y-%m-%d %H:%M:%S')
         args.update({"birth_year": date_birth.year})
         args.update({"birth_month": date_birth.month})
         args.update({"birth_day": date_birth.day})
 
     return render(request, 'profil.html', args)
 
-@login_required
+
+@ login_required
 def password_change(request):
     redirection_page = "/library_search/error"
-    
+
     if request.method == "POST":
         current_password = request.POST["old_password"]
         new_password = request.POST.get("new_password1")
@@ -132,18 +169,19 @@ def password_change(request):
             redirection_page = "/library_search/error"
         # 새로운 패스워드와 패스워드 확인이 같은지 체크
         elif new_password != password_confirm:
-            redirection_page = "/library_search/error"    
+            redirection_page = "/library_search/error"
         # 현재 패스워드 일치여부 체크
         elif check_password(current_password, user.password):
-                user.set_password(new_password)
-                user.save()
-                auth.login(request, user)
-                url = "/library_search/"
-                resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
-                return HttpResponse(resp_body)
+            user.set_password(new_password)
+            user.save()
+            auth.login(request, user)
+            url = "/library_search/"
+            resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
+            return HttpResponse(resp_body)
         else:
             redirection_page = "/library_search/error"
     return redirect(redirection_page)
+
 
 def error(request):
     return render(request, 'error.html')
