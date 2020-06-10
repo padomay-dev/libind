@@ -3,7 +3,7 @@ from django.contrib import auth
 from django.shortcuts import render, redirect
 from django.db.models import Count
 from django.template.context_processors import csrf
-
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
@@ -13,8 +13,6 @@ from library_search_app.models import *
 
 def main(request):
     return render(request, 'main.html')
-
-
 def introduce(request):
     return render(request, 'introduce.html')
 
@@ -97,14 +95,34 @@ def user_register_done(request):
 @login_required
 def profil(request):
     user = request.user
-    print(str(user.date_of_birth)[:-6])
-    date_birth = datetime.strptime(str(user.date_of_birth)[:-6], '%Y-%m-%d %H:%M:%S')
     args = {}
-    print(date_birth.year, date_birth.month, date_birth.day)
-    args.update({"birth_year": date_birth.year})
-    args.update({"birth_month": date_birth.month})
-    args.update({"birth_day": date_birth.day})
+    if user.date_of_birth != None:
+        date_birth = datetime.strptime(str(user.date_of_birth)[:-6], '%Y-%m-%d %H:%M:%S')
+        args.update({"birth_year": date_birth.year})
+        args.update({"birth_month": date_birth.month})
+        args.update({"birth_day": date_birth.day})
     return render(request, 'profil.html', args)
+
+@login_required
+def password_change(request):
+    args = {}
+    if request.method == "POST":
+        current_password = request.POST["old_password"]
+        user = request.user
+        if check_password(current_password,user.password):
+            new_password = request.POST.get("password1")
+            password_confirm = request.POST.get("password2")
+            if new_password == password_confirm:
+                user.set_password(new_password)
+                user.save()
+                auth.login(request,user)
+                resp_body = '<script>alert("You must remove an item before adding another");window.location="%s"</script>' % "{% url 'main'%}"
+                return HttpResponse(resp_body)
+            else:
+                args.update({"new_password_result" : "새로운 비밀번호를 다시 확인해주세요."})
+        else:
+            args.update({'old_password_result':"현재 비밀번호가 일치하지 않습니다."})
+    return render(request, "password_change.html", args)
 
 def error(request):
     return render(request, 'error.html')
