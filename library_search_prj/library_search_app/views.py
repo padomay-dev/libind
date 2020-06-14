@@ -3,7 +3,6 @@ import re
 
 from django.contrib import auth
 from django.shortcuts import render, redirect
-from django.db.models import Count
 from django.template.context_processors import csrf
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
@@ -168,7 +167,7 @@ def profil(request):
 
 @ login_required
 def password_change(request):
-    redirection_page = "/library_search/error"
+    error_msg = "/library_search/error"
 
     if request.method == "POST":
         current_password = request.POST["old_password"]
@@ -176,23 +175,30 @@ def password_change(request):
         password_confirm = request.POST.get("new_password2")
         user = request.user
 
-        # 새로운패스워드 길이 체크
-        if len(new_password) < 8:
-            redirection_page = "/library_search/error"
-        # 새로운 패스워드와 패스워드 확인이 같은지 체크
-        elif new_password != password_confirm:
-            redirection_page = "/library_search/error"
-        # 현재 패스워드 일치여부 체크
-        elif check_password(current_password, user.password):
-            user.set_password(new_password)
-            user.save()
-            auth.login(request, user)
-            url = "/library_search/"
-            resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
-            return HttpResponse(resp_body)
-        else:
-            redirection_page = "/library_search/error"
-    return redirect(redirection_page)
+    # 새로운패스워드 길이 체크
+    if len(new_password) < 8:
+        redirect(error_msg)
+    # 새로운 패스워드와 패스워드 확인이 같은지 체크
+    elif new_password != password_confirm:
+        redirect(error_msg)
+    # 현재 패스워드 일치여부 체크
+    elif check_password(current_password, user.password):
+        user.set_password(new_password)
+        user.save()
+        auth.login(request, user)
+        url = "/library_search/"
+        resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
+        return HttpResponse(resp_body)
+    else:
+        redirect(error_msg)
+
+    return render(request, 'password_chage.html')
+
+
+@login_required
+def board_write(request):
+
+    return render(request, "board_write.html")
 
 
 def error(request):

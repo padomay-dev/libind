@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils import timezone
+from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
 
 
@@ -65,3 +66,25 @@ class User(AbstractBaseUser):
 
     class Meta:
         db_table = 'auth_user'
+
+
+class BoardCategories(models.Model):
+    # category_parents = models.CharField(max_length=100)
+    category_name = models.CharField(max_length=100)
+    category_description = models.CharField(max_length=100)
+    list_count = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return "%s" % self.category_name
+
+
+class Boards(models.Model):
+    category = models.ForeignKey(BoardCategories, models.DO_NOTHING)
+    board_type = models.CharField(max_length=50)
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    title = models.CharField(max_length=300)
+    content = models.TextField()
+    registered_date = models.DateTimeField(default=timezone.now)
+    last_update_date = models.DateTimeField(default=timezone.now)
+    view_count = models.IntegerField(blank=True, default=0)
+    image = RichTextUploadingField(blank=True, null=True)

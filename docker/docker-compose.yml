@@ -14,8 +14,8 @@ services:
       MYSQL_DATABASE: bookdb
       MYSQL_USER: book
       MYSQL_PASSWORD: 1352eltl
-    # volumes:
-    #   - ../db_data:/var/lib/mysql
+    volumes:
+      - ../db_data:/var/lib/mysql
   
     # command: bash - c "echo 'alter user 'book'@'%' identified with mysql_native_password by '1352eltl';' >mysql -u root -p1352eltl"
     # command: /bin/bash -c "echo "alter user 'book'@'%' identified with mysql_native_password by '1352eltl';" > mysql -p 1352eltl"
@@ -23,26 +23,23 @@ services:
     networks:
       - booknet
 
-  book:
-    build: .
-    environment:
-      - DJANGO_DEBUG=True
-      - DJANGO_DB_HOST=db 
-      - DJANGO_DB_PORT=3306
-      - DJANGO_DB_NAME=bookdb
-      - DJANGO_DB_USERNAME=book
-      - DJANGO_DB_PASSWORD=1352eltl
-    volumes:
-      - ../:/app
-    ports:
-      - "8000:8000"
-    networks:
-      - booknet
-    restart: always
-    # command: python /app/library_search_prj/manage.py runserver 0:8000
-    command: python /app/library_search_prj/infinity.py
-    depends_on:
-      - db
-# #make network
-networks:
-  booknet:
+  # book:
+  #   build: .
+  #   environment:
+  #     - DJANGO_DEBUG=True
+  #     - DJANGO_DB_HOST=db 
+  #     - DJANGO_DB_PORT=3306
+  #     - DJANGO_DB_NAME=bookdb
+  #     - DJANGO_DB_USERNAME=book
+  #     - DJANGO_DB_PASSWORD=1352eltl
+  #   volumes:
+  #     - ../:/app
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     - booknet
+  #   restart: always
+  #   # command: python /app/library_search_prj/manage.py runserver 0:8000
+  #   command: python /app/library_search_prj/infinity.py
+  #   depends_on:
+  #     - db
