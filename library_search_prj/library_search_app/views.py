@@ -104,12 +104,13 @@ def user_register_idcheck(reuqest):
 
 def user_register_result(request):
     if request.method == "POST":
+        error_page = '/library_search/error/'
+
         user_id = request.POST['user_id']
         password = request.POST['password']
         last_name = request.POST['last_name']
         phone = request.POST['phone_number']
         email = request.POST['email']
-
         # 생년월일 기입여부 체크
         if request.POST['birth_year'] != '' and request.POST['birth_month'] != '' and request.POST['birth_day'] != '':
             birth_year = int(request.POST['birth_year'])
@@ -122,27 +123,23 @@ def user_register_result(request):
         except:
             date_of_birth = None
 
-    try:
         p = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         # data 길이 체크
         if len(user_id) < 4 or len(password) < 8 or len(last_name) < 2:
-            redirection_page = '/library_search/error/'
+            return redirect(error_page)
         # email 형식체크
         elif not p.match(email):
-            redirection_page = '/library_search/error/'
+            return redirect(error_page)
         # ID중복여부 체크
         elif user_id and User.objects.filter(user_id=user_id).count() == 0:
             user = User.objects.create_user(
                 user_id, password, last_name, email, phone, date_of_birth
             )
             auth.login(request, user)
-            redirection_page = '/library_search/user_register_done/'
+            return redirect('/library_search/user_register_done')
         else:
-            redirection_page = '/library_search/error/'
-    except:
-        redirection_page = '/library_search/error/'
-
-    return redirect(redirection_page)
+            return redirect(error_page)
+    return render(request, 'user_register.html')
 
 
 def user_register_done(request):

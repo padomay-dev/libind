@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils import timezone
+from datetime import datetime
+from django.conf import settings
 from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
 
@@ -31,8 +33,7 @@ class UserManager(BaseUserManager):
             last_name=last_name,
             email=email,
             phone=phone,
-            date_of_birth=date_of_birth
-        )
+            date_of_birth=timezone.now())
         user.is_superuser = 1
         user.is_staff = 1
         user.save(using=self._db)
