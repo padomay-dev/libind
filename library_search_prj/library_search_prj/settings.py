@@ -16,6 +16,9 @@ import json
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+with open("../ignore.json", "r") as st_json:
+    hide_json = json.load(st_json)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -77,11 +80,11 @@ WSGI_APPLICATION = 'library_search_prj.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bookdb',
-        'USER': 'book',
-        'PASSWORD': '1352eltl',
-        'HOST': 'db',
+        'HOST': 'book-database.crklfe6hwodx.ap-northeast-2.rds.amazonaws.com',
         'PORT': '3306',
+        'NAME': 'bookdb',
+        'USER': 'root',
+        'PASSWORD': hide_json['db_password'],
     }
 }
 
@@ -132,13 +135,10 @@ STATICFILES_DIRS = [
 
 print(os.getcwd())
 
-with open("../ignore.json", "r") as st_json:
-    st_python = json.load(st_json)
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = 'padomay1352@gmail.com'
-EMAIL_HOST_PASSWORD = st_python['email_password']
+EMAIL_HOST_PASSWORD = hide_json['email_password']
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

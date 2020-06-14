@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}패스워드 변경{% endblock title %}
+{% block script %}
+{% if user.username%}
+<script>
+    alert("잘못된 접근입니다.");
+    location.href = "{% url 'main'' %}"
+</script>
+{% endif %}
+{% endblock script %}
+{% block content %}
+
+
+<div class="container">
+    <form action="." method="POST" enctype="multipart/form-data" id="password_change_form"
+        class="w-50 my-5 mx-auto needs-validation" onsubmit="return password_check();" novalidate>
+        {% csrf_token %}
+        <h1 class="display-4">게시판 작성</h1>
+        <div class="row">
+            <div class="col-3">작성자</div>
+            <div class="col-3">
+                <p>{{user.last_name}}</p>
+            </div>
+            <div class="col-3"></div>
+        </div>
+        <div class="form-group">
+            <label class="font-weight-bold" for="password">New Password:</label>
+            <input type="password" name="new_password1" class="form-control form-control-lg" id="id_new_password1"
+                required>
+            <div class="text-danger" id="password_new1_result"></div>
+        </div>
+        <div class="form-group">
+            <label class="font-weight-bold" for="password">New Password Check:</label>
+            <input type="password" name="new_password2" class="form-control form-control-lg" id="id_new_password2"
+                required>
+            <div class="text-danger mt-1" id="password_new2_result"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">패스워드 변경</button>
+    </form>
+    {% if old_password_result %}
+    <script>
+        password_old_result = document.getElementById('password_old_result');
+        password_old_result.innerHTML = "{{old_password_result}}"
+    </script>
+    {% endif %}
+    {% if new_password_result %}
+    <script>
+        document.getElementById('password_new1_result').innerHTML = '{{new_password_result}}'
+    </script>
+    {%endif%}
+</div>
+{% endblock content %}
