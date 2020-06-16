@@ -193,9 +193,8 @@ def password_change(request):
 
 
 @login_required
-def board_write(request):
-
-    return render(request, "board_write.html")
+def common_board_write(request):
+    return render(request, "common_board_write.html")
 
 
 def error(request):

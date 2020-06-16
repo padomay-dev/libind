@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}패스워드 변경{% endblock title %}
+{% block script %}
+{% if user.username%}
+<script>
+    alert("잘못된 접근입니다.");
+    location.href = "{% url 'main' %}"
+</script>
+{% endif %}
+{% endblock script %}
+{% block content %}
+
+
+<div class="container">
+    <form action="." method="POST" enctype="multipart/form-data" id="password_change_form" class="w-50 my-5 mx-auto">
+        {% csrf_token %}
+        <input type="hidden" name="category_name" value="common">
+        <h1 class="display-4">게시판 작성</h1>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text text-border">작성자</span>
+            </div>
+            <input type="text" class="form-control" name="user_last_name" value="{{user.last_name}}" readonly>
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text text-border">type</span>
+            </div>
+            <div class="form-check-inline">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" value="normal" checked>일반
+                </label>
+            </div>
+            <div class="form-check-inline">
+                <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" value="feedback">문의
+                </label>
+            </div>
+        </div>
+        <input type="text" class="form-control" name="title" placeholder="제목을 입력하시오">
+        {{form.media}}
+        {{form.as_p}}
+        <div class="form-group">
+            <label class="font-weight-bold" for="password">New Password Check:</label>
+            <input type="password" name="new_password2" class="form-control form-control-lg" id="id_new_password2"
+                required>
+            <div class="text-danger mt-1" id="password_new2_result"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">작성</button>
+    </form>
+</div>
+{% endblock content %}

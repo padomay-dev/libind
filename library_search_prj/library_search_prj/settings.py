@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'library_search_app.apps.LibrarySearchAppConfig'
+    'library_search_app.apps.LibrarySearchAppConfig',
+    'ckeditor',
+    'ckeditor_uploader',
 ]
 
 MIDDLEWARE = [
@@ -77,16 +79,29 @@ WSGI_APPLICATION = 'library_search_prj.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'book-database.crklfe6hwodx.ap-northeast-2.rds.amazonaws.com',
+        'HOST': 'libind-db.crklfe6hwodx.ap-northeast-2.rds.amazonaws.com',
         'PORT': '3306',
-        'NAME': 'bookdb',
-        'USER': 'root',
+        'NAME': 'libind',
+        'USER': 'admin',
         'PASSWORD': hide_json['db_password'],
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'HOST': 'book-database.crklfe6hwodx.ap-northeast-2.rds.amazonaws.com',
+#         'PORT': '3306',
+#         'NAME': 'bookdb',
+#         'USER': 'root',
+#         'PASSWORD': hide_json['db_password'],
+#     }
+# }
 
 
 # Password validation
@@ -133,7 +148,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'library_search_app', 'static'),
 ]
 
-print(os.getcwd())
+MEDIA_URL = '/media/'
+MEDIA_ROOT = 'media/'
+CKEDITOR_UPLOAD_PATH = "uploads/"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"

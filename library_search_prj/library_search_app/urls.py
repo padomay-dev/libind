@@ -16,7 +16,7 @@ urlpatterns = [
     path('user_register_done/', user_register_done, name='user_register_done'),
     path('profil', profil, name='profil'),
     path('password_change/', password_change, name='password_change'),
-    # path('password_change_done/', password_change_done,  name='password_change_done'),
+    path('common_board_write/', common_board_write, name="common_board_write"),
     path('error/', error, name='error'),
     # path('password_change/', auth_views.PasswordChangeView.as_view(template_name='password_change.html'), name='password_change'),
     # path('password_change_completed/', auth_views.PasswordChangeDoneView.as_view(template_name='password_change_done.html'), name='password_change_done'),
