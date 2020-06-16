@@ -29,24 +29,18 @@
             </div>
             <div class="form-check-inline">
                 <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" value="normal" checked>일반
+                    <input type="checkbox" class="form-check-input" name='board_type' value="normal" checked>일반
                 </label>
             </div>
             <div class="form-check-inline">
                 <label class="form-check-label">
-                    <input type="checkbox" class="form-check-input" value="feedback">문의
+                    <input type="checkbox" class="form-check-input" name='board_type' value="feedback">문의
                 </label>
             </div>
         </div>
         <input type="text" class="form-control" name="title" placeholder="제목을 입력하시오">
         {{form.media}}
         {{form.as_p}}
-        <div class="form-group">
-            <label class="font-weight-bold" for="password">New Password Check:</label>
-            <input type="password" name="new_password2" class="form-control form-control-lg" id="id_new_password2"
-                required>
-            <div class="text-danger mt-1" id="password_new2_result"></div>
-        </div>
         <button type="submit" class="btn btn-primary">작성</button>
     </form>
 </div>

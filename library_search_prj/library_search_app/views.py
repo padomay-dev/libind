@@ -1,20 +1,20 @@
 import math
 import re
 
-from django.contrib import auth
 from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
+from django.contrib import auth
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.http import HttpResponse, JsonResponse
-from django.views.generic import DetailView
 from datetime import datetime
-from library_search_app.models import *
 from django.core.mail import EmailMessage
 import random
 import string
 import threading
+from library_search_app.models import *
+from .forms import BoardsForm
 
 
 def main(request):
@@ -172,29 +172,46 @@ def password_change(request):
         password_confirm = request.POST.get("new_password2")
         user = request.user
 
-    # 새로운패스워드 길이 체크
-    if len(new_password) < 8:
-        redirect(error_msg)
-    # 새로운 패스워드와 패스워드 확인이 같은지 체크
-    elif new_password != password_confirm:
-        redirect(error_msg)
-    # 현재 패스워드 일치여부 체크
-    elif check_password(current_password, user.password):
-        user.set_password(new_password)
-        user.save()
-        auth.login(request, user)
-        url = "/library_search/"
-        resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
-        return HttpResponse(resp_body)
-    else:
-        redirect(error_msg)
+        # 새로운패스워드 길이 체크
+        if len(new_password) < 8:
+            redirect(error_msg)
+        # 새로운 패스워드와 패스워드 확인이 같은지 체크
+        elif new_password != password_confirm:
+            redirect(error_msg)
+        # 현재 패스워드 일치여부 체크
+        elif check_password(current_password, user.password):
+            user.set_password(new_password)
+            user.save()
+            auth.login(request, user)
+            url = "/library_search/"
+            resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
+            return HttpResponse(resp_body)
+        else:
+            redirect(error_msg)
 
     return render(request, 'password_chage.html')
 
 
 @login_required
 def common_board_write(request):
-    return render(request, "common_board_write.html")
+    boards_form = BoardsForm()
+    args = {}
+    args.update({"form": boards_form})
+
+    if request.method == "POST":
+        try:
+            category = BoardCategories.objects.get(
+                category_name=request.POST['category_name'])
+            board_type = request.POST['board_type']
+            user = request.user
+            title = request.POST['title']
+            content = request.POST['content']
+            board = Boards.objects.create(
+                category=category, board_type=board_type, user=user, title=title, content=content)
+            return redirect('/library_search')
+        except:
+            redirect('/library_search/error')
+    return render(request, "common_board_write.html", args)
 
 
 def error(request):
