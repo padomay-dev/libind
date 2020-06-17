@@ -1,6 +1,8 @@
 import math
 import re
 
+from library_search_app.models import *
+from .forms import BoardsForm
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
@@ -10,11 +12,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import datetime
 from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
 import random
 import string
 import threading
-from library_search_app.models import *
-from .forms import BoardsForm
 
 
 def main(request):
@@ -104,7 +105,6 @@ def user_register_idcheck(reuqest):
 
 def user_register_result(request):
     if request.method == "POST":
-        error_page = '/library_search/error/'
 
         user_id = request.POST['user_id']
         password = request.POST['password']
@@ -126,10 +126,10 @@ def user_register_result(request):
         p = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         # data 길이 체크
         if len(user_id) < 4 or len(password) < 8 or len(last_name) < 2:
-            return redirect(error_page)
+            return redirect('error')
         # email 형식체크
         elif not p.match(email):
-            return redirect(error_page)
+            return redirect('error')
         # ID중복여부 체크
         elif user_id and User.objects.filter(user_id=user_id).count() == 0:
             user = User.objects.create_user(
@@ -138,7 +138,7 @@ def user_register_result(request):
             auth.login(request, user)
             return redirect('/library_search/user_register_done')
         else:
-            return redirect(error_page)
+            return redirect('error')
     return render(request, 'user_register.html')
 
 
@@ -164,7 +164,6 @@ def profil(request):
 
 @ login_required
 def password_change(request):
-    error_msg = "/library_search/error"
 
     if request.method == "POST":
         current_password = request.POST["old_password"]
@@ -174,10 +173,10 @@ def password_change(request):
 
         # 새로운패스워드 길이 체크
         if len(new_password) < 8:
-            redirect(error_msg)
+            redirect('error')
         # 새로운 패스워드와 패스워드 확인이 같은지 체크
         elif new_password != password_confirm:
-            redirect(error_msg)
+            redirect('error')
         # 현재 패스워드 일치여부 체크
         elif check_password(current_password, user.password):
             user.set_password(new_password)
@@ -187,31 +186,65 @@ def password_change(request):
             resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
             return HttpResponse(resp_body)
         else:
-            redirect(error_msg)
+            redirect('error')
 
     return render(request, 'password_chage.html')
 
 
 @login_required
-def common_board_write(request):
+def board_write(request, category=''):
     boards_form = BoardsForm()
     args = {}
     args.update({"form": boards_form})
+    args.update({"category": category})
 
     if request.method == "POST":
-        try:
-            category = BoardCategories.objects.get(
-                category_name=request.POST['category_name'])
-            board_type = request.POST['board_type']
-            user = request.user
-            title = request.POST['title']
-            content = request.POST['content']
-            board = Boards.objects.create(
-                category=category, board_type=board_type, user=user, title=title, content=content)
-            return redirect('/library_search')
-        except:
-            redirect('/library_search/error')
-    return render(request, "common_board_write.html", args)
+        category = BoardCategories.objects.get(
+            category_name=request.POST['category_name'])
+        board_type = request.POST['board_type']
+        user = request.user
+        title = request.POST['title']
+        print(request.POST['title'])
+        content = request.POST['content']
+        board = Boards.objects.create(
+            category=category, board_type=board_type, user=user, title=title, content=content)
+        return redirect('/library_search/board_list/'+request.POST['category_name'])
+
+    return render(request, "board_write.html", args)
+
+
+def board_list(request, category=''):
+    try:
+        board_category = BoardCategories.objects.get(category_name=category)
+    except:
+        return redirect('error')
+
+    articles = Boards.objects.filter(
+        category__category_name=category).order_by('-id')
+
+    paginator = Paginator(articles, board_category.list_count)
+
+    try:
+        page = int(request.GET['page'])
+    except:
+        page = 1
+    articles = paginator.get_page(page)
+
+    page_count = 10
+    page_list = []
+    first_page = (math.ceil(page/page_count)-1)*page_count+1
+    last_page = min([math.ceil(page/page_count) *
+                     page_count, paginator.num_pages])
+    for i in range(first_page, last_page+1):
+        page_list.append(i)
+
+    args = {}
+    args.update({"articles": articles})
+    args.update({"board_category": board_category})
+    # args.update({"search_text": search_text})
+    args.update({"page_list": page_list})
+
+    return render(request, "board_list.html", args)
 
 
 def error(request):

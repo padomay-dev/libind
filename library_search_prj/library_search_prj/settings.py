@@ -152,6 +152,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = 'media/'
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
+CKEDITOR_CONFIGS = {
+    'default': {
+        'width': 'auto',
+    },
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = 'padomay1352@gmail.com'
