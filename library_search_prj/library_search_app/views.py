@@ -9,6 +9,7 @@ from django.template.context_processors import csrf
 from django.contrib import auth
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
+from django.views.generic import DetailView
 from django.utils import timezone
 from datetime import datetime
 from django.core.mail import EmailMessage
@@ -245,6 +246,19 @@ def board_list(request, category=''):
     args.update({"page_list": page_list})
 
     return render(request, "board_list.html", args)
+
+
+class BoardView(DetailView):
+    model = Boards
+    template_name = 'board_view.html'
+
+    def dispatch(self, request, pk):
+        obj = self.get_object()
+        if request.user != obj.user:
+            obj.view_count = obj.view_count + 1
+            obj.save()
+
+        return render(request, self.template_name, {"object": obj})
 
 
 def error(request):

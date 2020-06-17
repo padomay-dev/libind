@@ -18,6 +18,7 @@ urlpatterns = [
     path('password_change/', password_change, name='password_change'),
     path('board_write/<category>', board_write, name="board_write"),
     path('board_list/<category>', board_list, name="board_list"),
+    path('board_view/<int:pk>/', BoardView.as_view(), name='boardview'),
     path('error/', error, name='error'),
     # path('password_change/', auth_views.PasswordChangeView.as_view(template_name='password_change.html'), name='password_change'),
     # path('password_change_completed/', auth_views.PasswordChangeDoneView.as_view(template_name='password_change_done.html'), name='password_change_done'),
