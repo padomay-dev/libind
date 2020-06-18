@@ -10,6 +10,8 @@ from django.contrib import auth
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView
+from django.views.generic.edit import UpdateView
+
 from django.utils import timezone
 from datetime import datetime
 from django.core.mail import EmailMessage
@@ -174,10 +176,10 @@ def password_change(request):
 
         # 새로운패스워드 길이 체크
         if len(new_password) < 8:
-            redirect('error')
+            return redirect('error')
         # 새로운 패스워드와 패스워드 확인이 같은지 체크
         elif new_password != password_confirm:
-            redirect('error')
+            return redirect('error')
         # 현재 패스워드 일치여부 체크
         elif check_password(current_password, user.password):
             user.set_password(new_password)
@@ -187,9 +189,9 @@ def password_change(request):
             resp_body = '<script>alert("패스워드 변경이 완료되었습니다.");window.location="%s"</script>' % url
             return HttpResponse(resp_body)
         else:
-            redirect('error')
+            return redirect('error')
 
-    return render(request, 'password_chage.html')
+    return render(request, 'password_change.html')
 
 
 @login_required
@@ -200,18 +202,67 @@ def board_write(request, category=''):
     args.update({"category": category})
 
     if request.method == "POST":
-        category = BoardCategories.objects.get(
-            category_name=request.POST['category_name'])
+        try:
+            category = BoardCategories.objects.get(
+                category_name=request.POST['category_name'])
+        except:
+            return redirect('error')
         board_type = request.POST['board_type']
         user = request.user
         title = request.POST['title']
-        print(request.POST['title'])
         content = request.POST['content']
-        board = Boards.objects.create(
-            category=category, board_type=board_type, user=user, title=title, content=content)
-        return redirect('/library_search/board_list/'+request.POST['category_name'])
+
+        if category and board_type and user and title and content:
+            board = Boards.objects.create(
+                category=category, board_type=board_type, user=user, title=title, content=content)
+            return redirect('/library_search/board_list/'+request.POST['category_name'])
+        else:
+            return redirect('error')
 
     return render(request, "board_write.html", args)
+
+
+class BoardView(DetailView):
+    model = Boards
+    template_name = 'board_view.html'
+
+    def dispatch(self, request, pk):
+        obj = self.get_object()
+        print(obj.content)
+        if request.user != obj.user:
+            obj.view_count = obj.view_count + 1
+            obj.save()
+
+        return render(request, self.template_name, {"object": obj})
+
+
+@login_required
+def board_update(request, pk=''):
+    try:
+        board = Boards.objects.get(id=pk)
+    except:
+        return redirect('error')
+
+    boards_form = BoardsForm(initial={'content': board.content})
+    args = {}
+    args.update({"form": boards_form})
+    args.update({"board": board})
+
+    if request.method == "POST":
+        board_type = request.POST['board_type']
+        user = request.user
+        title = request.POST['title']
+        content = request.POST['content']
+
+        board.board_type = board_type
+        board.user = user
+        board.title = title
+        board.content = content
+        board.last_update_date = timezone.now()
+        board.save()
+        return redirect('/library_search/board_view/'+str(pk))
+
+    return render(request, "board_update.html", args)
 
 
 def board_list(request, category=''):
@@ -246,19 +297,6 @@ def board_list(request, category=''):
     args.update({"page_list": page_list})
 
     return render(request, "board_list.html", args)
-
-
-class BoardView(DetailView):
-    model = Boards
-    template_name = 'board_view.html'
-
-    def dispatch(self, request, pk):
-        obj = self.get_object()
-        if request.user != obj.user:
-            obj.view_count = obj.view_count + 1
-            obj.save()
-
-        return render(request, self.template_name, {"object": obj})
 
 
 def error(request):

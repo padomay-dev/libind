@@ -5,7 +5,7 @@ from library_search_app.models import Boards
 
 
 class BoardsForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorUploadingWidget(), label='')
+    content = forms.CharField(widget=CKEditorUploadingWidget(), label=False)
 
     class Meta:
         model = Boards
