@@ -203,7 +203,7 @@ def board_write(request, category=''):
 
     if request.method == "POST":
         try:
-            category = BoardCategories.objects.get(
+            category_obj = BoardCategories.objects.get(
                 category_name=request.POST['category_name'])
         except:
             return redirect('error')
@@ -212,37 +212,18 @@ def board_write(request, category=''):
         title = request.POST['title']
         content = request.POST['content']
 
-        if category and board_type and user and title and content:
+        if category_obj and board_type and user and title and content:
             board = Boards.objects.create(
-                category=category, board_type=board_type, user=user, title=title, content=content)
-            return redirect('/library_search/board_list/'+request.POST['category_name'])
+                category=category_obj, board_type=board_type, user=user, title=title, content=content)
+            return redirect('/library_search/board_view/'+category+'/'+str(board.id))
         else:
             return redirect('error')
 
     return render(request, "board_write.html", args)
 
 
-class BoardView(DetailView):
-    model = Boards
-    template_name = 'board_view.html'
-
-    def dispatch(self, request, pk):
-        obj = self.get_object()
-        if request.user != obj.user:
-            obj.view_count = obj.view_count + 1
-            obj.save()
-
-        replies = BoardReplies.objects.filter(article__id=pk)
-        args = {}
-        args.update({"object": obj})
-        args.update({"pk": pk})
-        args.update({"replies": replies})
-
-        return render(request, self.template_name, args)
-
-
 @ login_required
-def board_update(request, pk=''):
+def board_update(request, category='', pk=''):
     try:
         board = Boards.objects.get(id=pk)
     except:
@@ -265,9 +246,39 @@ def board_update(request, pk=''):
         board.content = content
         board.last_update_date = timezone.now()
         board.save()
-        return redirect('/library_search/board_view/'+str(pk))
+        return redirect('/library_search/board_view/'+category+'/'+str(pk))
 
     return render(request, "board_update.html", args)
+
+
+@ login_required
+def board_delete(request, category='', pk=''):
+    try:
+        board = Boards.objects.get(id=pk)
+        board.delete()
+        return redirect('/library_search/board_view/'+category)
+    except:
+        return redirect('error')
+
+
+class BoardView(DetailView):
+    model = Boards
+    template_name = 'board_view.html'
+
+    def dispatch(self, request, category='', pk=''):
+        obj = self.get_object()
+        if request.user != obj.user:
+            obj.view_count = obj.view_count + 1
+            obj.save()
+
+        replies = BoardReplies.objects.filter(article__id=pk)
+        args = {}
+        args.update({"object": obj})
+        args.update({"pk": pk})
+        args.update({"category": category})
+        args.update({"replies": replies})
+
+        return render(request, self.template_name, args)
 
 
 def board_list(request, category=''):
@@ -297,13 +308,13 @@ def board_list(request, category=''):
 
     args = {}
     args.update({"articles": articles})
-    args.update({"board_category": board_category})
+    args.update({"category": category})
     # args.update({"search_text": search_text})
     args.update({"page_list": page_list})
     return render(request, "board_list.html", args)
 
 
-def reply_write(request, pk):
+def reply_write(request, category, pk):
     if request.method == 'POST':
         article = Boards.objects.get(id=pk)
         user = request.user
@@ -311,7 +322,7 @@ def reply_write(request, pk):
         content = request.POST['content']
         BoardReplies.objects.create(
             article=article, user=user, level=level, content=content)
-    return redirect('/library_search/board_view/'+str(pk))
+    return redirect('/library_search/board_view/'+category+'/'+str(pk))
 
 
 def error(request):
