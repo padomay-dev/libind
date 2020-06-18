@@ -228,15 +228,20 @@ class BoardView(DetailView):
 
     def dispatch(self, request, pk):
         obj = self.get_object()
-        print(obj.content)
         if request.user != obj.user:
             obj.view_count = obj.view_count + 1
             obj.save()
 
-        return render(request, self.template_name, {"object": obj})
+        replies = BoardReplies.objects.filter(article__id=pk)
+        args = {}
+        args.update({"object": obj})
+        args.update({"pk": pk})
+        args.update({"replies": replies})
+
+        return render(request, self.template_name, args)
 
 
-@login_required
+@ login_required
 def board_update(request, pk=''):
     try:
         board = Boards.objects.get(id=pk)
@@ -266,13 +271,13 @@ def board_update(request, pk=''):
 
 
 def board_list(request, category=''):
-    try:
-        board_category = BoardCategories.objects.get(category_name=category)
-    except:
-        return redirect('error')
 
-    articles = Boards.objects.filter(
-        category__category_name=category).order_by('-id')
+    if category:
+        board_category = BoardCategories.objects.get(category_name=category)
+        articles = Boards.objects.filter(
+            category__category_name=category).order_by('-id')
+    else:
+        return redirect('error')
 
     paginator = Paginator(articles, board_category.list_count)
 
@@ -295,8 +300,18 @@ def board_list(request, category=''):
     args.update({"board_category": board_category})
     # args.update({"search_text": search_text})
     args.update({"page_list": page_list})
-
     return render(request, "board_list.html", args)
+
+
+def reply_write(request, pk):
+    if request.method == 'POST':
+        article = Boards.objects.get(id=pk)
+        user = request.user
+        level = request.POST['level']
+        content = request.POST['content']
+        BoardReplies.objects.create(
+            article=article, user=user, level=level, content=content)
+    return redirect('/library_search/board_view/'+str(pk))
 
 
 def error(request):

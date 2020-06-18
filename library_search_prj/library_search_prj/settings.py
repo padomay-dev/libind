@@ -89,6 +89,9 @@ DATABASES = {
         'NAME': 'libind',
         'USER': 'admin',
         'PASSWORD': hide_json['db_password'],
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 

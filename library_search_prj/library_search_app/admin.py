@@ -4,3 +4,5 @@ from .models import *
 admin.site.register(User)
 admin.site.register(Boards)
 admin.site.register(BoardCategories)
+admin.site.register(BoardReplies)
+admin.site.register(BoardLikes)

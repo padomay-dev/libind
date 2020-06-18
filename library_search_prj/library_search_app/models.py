@@ -65,9 +65,6 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
-    class Meta:
-        db_table = 'auth_user'
-
 
 class BoardCategories(models.Model):
     # category_parents = models.CharField(max_length=100)
@@ -88,3 +85,19 @@ class Boards(models.Model):
     registered_date = models.DateTimeField(default=timezone.now)
     last_update_date = models.DateTimeField(default=timezone.now)
     view_count = models.IntegerField(blank=True, default=0)
+
+
+class BoardReplies(models.Model):
+    article = models.ForeignKey(Boards, models.DO_NOTHING)
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    level = models.IntegerField(blank=True, null=True)
+    content = models.TextField()
+    registered_date = models.DateTimeField(default=timezone.now)
+    last_update_date = models.DateTimeField(default=timezone.now)
+    reference_reply_id = models.IntegerField(blank=True, null=True)
+
+
+class BoardLikes(models.Model):
+    article = models.ForeignKey(Boards, models.DO_NOTHING)
+    user = models.ForeignKey(User, models.DO_NOTHING)
+    registered_date = models.DateTimeField(default=timezone.now)
