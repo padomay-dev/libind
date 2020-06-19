@@ -25,6 +25,7 @@ urlpatterns = [
          BoardView.as_view(), name='board_view'),
     path('board_list/<category>', board_list, name="board_list"),
     path('reply_write/<category>/<int:pk>', reply_write, name="reply_write"),
+    path('board_like/', board_like, name="board_like"),
     path('error/', error, name='error'),
     #     path('board_modify/<int:pk>/', BoardModifyView.as_view(), name='boardmodify'),
     #     path('board_modify/<int:pk>/', BoardModifyView.as_view(), name='boardmodify'),

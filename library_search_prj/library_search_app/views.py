@@ -272,11 +272,16 @@ class BoardView(DetailView):
             obj.save()
 
         replies = BoardReplies.objects.filter(article__id=pk)
+        like = BoardLikes.objects.filter(article__id=pk, user=request.user)
+        like_length = BoardLikes.objects.filter(article__id=pk).count()
         args = {}
         args.update({"object": obj})
         args.update({"pk": pk})
         args.update({"category": category})
         args.update({"replies": replies})
+        args.update({"like_length": like_length})
+        if like.count() != 0:
+            args.update({"like": "true"})
 
         return render(request, self.template_name, args)
 
@@ -323,6 +328,23 @@ def reply_write(request, category, pk):
         BoardReplies.objects.create(
             article=article, user=user, level=level, content=content)
     return redirect('/library_search/board_view/'+category+'/'+str(pk))
+
+
+def board_like(request):
+    try:
+        user = User.objects.get(id=request.POST['user_id'])
+        article = Boards.objects.get(id=request.POST['article_id'])
+        like = BoardLikes.objects.filter(article=article, user=user)
+        print(user, article, like)
+        if like.count() == 0:
+            BoardLikes.objects.create(article=article, user=user)
+            like_condition = "like"
+        else:
+            like[0].delete()
+            like_condition = "unlike"
+        return JsonResponse({'like': like_condition})
+    except:
+        return JsonResponse('')
 
 
 def error(request):
